@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.learntechstack.springrest.exception.ProductNotfoundException;
 import com.learntechstack.springrest.model.Product;
 
 @RestController
@@ -31,20 +32,25 @@ public class ProductServiceController {
 	   
 	   
 	   @RequestMapping(value = "/products/{id}", method = RequestMethod.DELETE)
-	   public ResponseEntity<Object> getProduct(@PathVariable("id") String id) {
+	   public ResponseEntity<Object> getProduct(@PathVariable("id") String id) throws ProductNotfoundException {
+		   if(!productRepo.containsKey(id))
+			   throw new ProductNotfoundException();
 		   productRepo.remove(id);
 	      return new ResponseEntity<>("Product is deleted successsfully", HttpStatus.OK);
 	   }
 	   
 	   @RequestMapping(value = "/products/{id}", method = RequestMethod.GET)
-	   public ResponseEntity<Object> delete(@PathVariable("id") String id) { 
-	      
+	   public ResponseEntity<Object> delete(@PathVariable("id") String id) throws ProductNotfoundException { 
+		   if(!productRepo.containsKey(id))
+			   throw new ProductNotfoundException();
 	      return new ResponseEntity<>(productRepo.get(id), HttpStatus.OK);
 	   }
 	   
 	   @RequestMapping(value = "/products/{id}", method = RequestMethod.PUT)
-	   public ResponseEntity<Object> updateProduct(@PathVariable("id") String id, @RequestBody Product product) { 
-	      productRepo.remove(id);
+	   public ResponseEntity<Object> updateProduct(@PathVariable("id") String id, @RequestBody Product product) throws ProductNotfoundException { 
+		   if(!productRepo.containsKey(id))
+			   throw new ProductNotfoundException();
+		   productRepo.remove(id);
 	      product.setId(id);
 	      productRepo.put(id, product);
 	      return new ResponseEntity<>("Product is updated successsfully", HttpStatus.OK);
